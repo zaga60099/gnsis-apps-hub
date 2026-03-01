@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>GNSIS — APPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#030311;
+  --glass:rgba(255,255,255,0.045);
+  --glass2:rgba(255,255,255,0.07);
+  --glass-border:rgba(255,255,255,0.08);
+  --glass-border2:rgba(255,255,255,0.12);
+  --text:#f0f0f8;--text2:#8a8fa6;--text3:#4e536a;
+  --cyan:#00e5ff;--purple:#7c4dff;--pink:#e040fb;
+  --green:#00e676;--orange:#ff9100;--red:#ff2d55;
+  --blue:#2979ff;--teal:#00bcd4;--amber:#ffc107;
+  --icon-size:64px;--icon-r:17px;
+  --dock-blur:40px;
+}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+/* ====== ANIMATED MESH GRADIENT WALLPAPER ====== */
+.wall{position:fixed;inset:0;z-index:0;overflow:hidden}
+.wall-mesh{position:absolute;inset:-50%;width:200%;height:200%;background:
+  radial-gradient(ellipse at 20% 20%, rgba(124,77,255,0.12) 0%, transparent 50%),
+  radial-gradient(ellipse at 80% 30%, rgba(0,229,255,0.08) 0%, transparent 45%),
+  radial-gradient(ellipse at 50% 80%, rgba(224,64,251,0.06) 0%, transparent 50%),
+  radial-gradient(ellipse at 10% 70%, rgba(0,230,118,0.05) 0%, transparent 40%),
+  radial-gradient(ellipse at 90% 90%, rgba(255,45,85,0.04) 0%, transparent 35%);
+  animation:meshDrift 30s ease-in-out infinite alternate;
+}
+@keyframes meshDrift{
+  0%{transform:translate(0,0) rotate(0deg)}
+  33%{transform:translate(-3%,2%) rotate(1deg)}
+  66%{transform:translate(2%,-2%) rotate(-0.5deg)}
+  100%{transform:translate(-1%,1%) rotate(0.5deg)}
+}
+.wall-grid{position:absolute;inset:0;background:
+  linear-gradient(rgba(0,229,255,0.018) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,229,255,0.018) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);
+}
+/* Aurora strips */
+.aurora{position:absolute;width:140%;height:200px;left:-20%;filter:blur(80px);opacity:0.35;animation:auroraMove 20s ease-in-out infinite alternate}
+.aurora-1{top:5%;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.3),rgba(124,77,255,0.2),transparent);animation-delay:0s}
+.aurora-2{top:65%;background:linear-gradient(90deg,transparent,rgba(224,64,251,0.15),rgba(0,230,118,0.15),transparent);animation-delay:-8s;animation-duration:25s}
+@keyframes auroraMove{0%{transform:translateX(-10%)}100%{transform:translateX(10%)}}
+
+/* Stars */
+.stars{position:absolute;inset:0}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:0.15}50%{opacity:0.6}}
+
+/* ====== PARTICLES ====== */
+.particles{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.p{position:absolute;border-radius:50%;animation:pFloat linear infinite;opacity:0}
+@keyframes pFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:0.8}90%{opacity:0.8}100%{transform:translateY(-5vh) scale(1);opacity:0}}
+
+/* ====== SCREEN ====== */
+.screen{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;max-width:520px;margin:0 auto;perspective:800px}
+
+/* ====== DYNAMIC ISLAND ====== */
+.island{align-self:center;display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 16px;background:rgba(0,0,0,0.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;border:1px solid rgba(255,255,255,0.06);transition:all 0.4s cubic-bezier(0.4,0,0.2,1);cursor:default;min-width:120px;justify-content:center}
+.island:hover{padding:8px 22px;gap:12px;background:rgba(0,0,0,0.8);border-color:rgba(255,255,255,0.1)}
+.island-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px var(--green)}50%{box-shadow:0 0 16px var(--green)}}
+.island-text{font-size:0.62rem;font-weight:600;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase}
+.island-time{font-size:0.68rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:1px}
+.island-sep{width:1px;height:14px;background:rgba(255,255,255,0.1)}
+
+/* ====== CLOCK ====== */
+.clock{text-align:center;padding:20px 0 4px;user-select:none}
+.clock-h{font-size:5.5rem;font-weight:200;letter-spacing:8px;line-height:1;color:var(--text);text-shadow:0 0 60px rgba(0,229,255,0.1),0 2px 20px rgba(0,0,0,0.3)}
+.clock-d{font-size:0.82rem;font-weight:500;color:var(--text2);letter-spacing:3px;margin-top:6px;text-transform:uppercase}
+
+/* ====== GLASS WIDGET (KPI) ====== */
+.widget-strip{display:flex;gap:8px;padding:14px 8px 6px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.widget-strip::-webkit-scrollbar{display:none}
+.widget{background:var(--glass);backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);border:1px solid var(--glass-border);border-radius:18px;padding:14px 18px;min-width:120px;flex:1;text-align:center;position:relative;overflow:hidden;transition:all 0.3s}
+.widget:hover{border-color:var(--glass-border2);background:var(--glass2)}
+.widget::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent);border-radius:18px 18px 0 0;pointer-events:none}
+.w-val{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-variant-numeric:tabular-nums}
+.w-label{font-size:0.56rem;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-weight:600}
+.w-trend{font-size:0.5rem;margin-top:4px;font-weight:700;letter-spacing:0.5px}
+.w-up{color:var(--green)}.w-down{color:var(--red)}
+/* Glow accent on widget */
+.widget[data-accent="cyan"]::after{content:'';position:absolute;bottom:-20px;left:50%;width:60px;height:40px;background:var(--cyan);filter:blur(25px);opacity:0.1;transform:translateX(-50%);pointer-events:none}
+.widget[data-accent="pink"]::after{content:'';position:absolute;bottom:-20px;left:50%;width:60px;height:40px;background:var(--pink);filter:blur(25px);opacity:0.1;transform:translateX(-50%);pointer-events:none}
+
+/* ====== SEARCH ====== */
+.search{margin:10px 12px 4px;display:flex;align-items:center;gap:10px;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:14px;padding:11px 16px;cursor:text;transition:all 0.3s}
+.search:hover{border-color:var(--glass-border2);background:var(--glass2);box-shadow:0 0 20px rgba(0,229,255,0.04)}
+.search svg{width:15px;height:15px;fill:var(--text3);flex-shrink:0}
+.search span{font-size:0.76rem;color:var(--text3);font-weight:400}
+
+/* ====== SECTION ====== */
+.sec{font-size:0.58rem;font-weight:700;letter-spacing:4.5px;text-transform:uppercase;color:var(--text3);padding:16px 14px 8px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--glass-border),transparent 80%)}
+
+/* ====== APP GRID ====== */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 0;padding:0 4px}
+.app{display:flex;flex-direction:column;align-items:center;gap:7px;padding:10px 4px;border-radius:18px;cursor:pointer;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent;position:relative}
+.app:hover{background:rgba(255,255,255,0.035)}
+.app:active{transform:scale(0.88)}
+.app:active .icon{transform:scale(0.88)}
+
+.icon-wrap{position:relative;width:var(--icon-size);height:var(--icon-size)}
+.icon{width:100%;height:100%;border-radius:var(--icon-r);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:0 6px 20px rgba(0,0,0,0.35),0 0 0 0.5px rgba(255,255,255,0.05),inset 0 1px 0 rgba(255,255,255,0.08);image-rendering:auto}
+.app:hover .icon{box-shadow:0 8px 28px rgba(0,0,0,0.4),0 0 0 0.5px rgba(255,255,255,0.08),0 0 20px var(--glow,rgba(0,229,255,0.15))}
+
+.label{font-size:0.65rem;font-weight:500;text-align:center;line-height:1.2;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 5px rgba(0,0,0,0.7)}
+
+/* BADGE */
+.badge{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;border-radius:10px;background:var(--red);color:#fff;font-size:0.58rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 2px 8px rgba(255,45,85,0.5);z-index:3;border:2px solid var(--bg)}
+.badge-ai{background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:0 2px 8px rgba(124,77,255,0.5)}
+.badge-live{background:var(--green);box-shadow:0 2px 8px rgba(0,230,118,0.5);animation:pulseBadge 2s infinite}
+@keyframes pulseBadge{0%,100%{box-shadow:0 2px 8px rgba(0,230,118,0.5)}50%{box-shadow:0 2px 14px rgba(0,230,118,0.8)}}
+.badge-new{background:linear-gradient(135deg,var(--orange),var(--red))}
+
+/* ====== FOLDER ====== */
+.folder-icon{width:var(--icon-size);height:var(--icon-size);border-radius:var(--icon-r);background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:10px;transition:all 0.25s;cursor:pointer}
+.folder-icon:hover{border-color:var(--glass-border2);background:var(--glass2)}
+.folder-mini{width:100%;height:100%;border-radius:5px;object-fit:cover}
+.folder-overlay{display:none;position:fixed;inset:0;z-index:50;background:rgba(3,3,17,0.85);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;animation:fadeIn 0.3s ease-out}
+.folder-overlay.open{display:flex}
+.folder-title{font-size:1.1rem;font-weight:700;margin-bottom:24px;letter-spacing:2px}
+.folder-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;background:var(--glass2);border:1px solid var(--glass-border2);border-radius:24px;padding:24px}
+.folder-close{margin-top:32px;font-size:0.7rem;color:var(--text2);cursor:pointer;padding:8px 20px;border-radius:20px;border:1px solid var(--glass-border);transition:all 0.3s}
+.folder-close:hover{background:var(--glass2);color:var(--text)}
+
+/* ====== SCROLLABLE ====== */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:110px;mask-image:linear-gradient(to bottom,black 88%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 88%,transparent 100%)}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ====== DOCK ====== */
+.dock{position:fixed;bottom:0;left:0;right:0;z-index:10;display:flex;justify-content:center;padding:0 16px 16px;pointer-events:none}
+.dock-bar{display:flex;gap:12px;align-items:flex-end;justify-content:center;background:rgba(12,12,35,0.6);backdrop-filter:blur(var(--dock-blur)) saturate(1.6);-webkit-backdrop-filter:blur(var(--dock-blur)) saturate(1.6);border:1px solid rgba(255,255,255,0.07);border-radius:26px;padding:10px 20px;box-shadow:0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.03) inset;pointer-events:all;transition:padding 0.3s}
+.dock-i{width:50px;height:50px;border-radius:14px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.3),0 0 0 0.5px rgba(255,255,255,0.05);flex-shrink:0}
+/* Dock magnification via CSS — JS enhances this */
+.dock-i:hover{transform:translateY(-12px) scale(1.25);box-shadow:0 12px 30px rgba(0,0,0,0.4),0 0 20px var(--glow,rgba(0,229,255,0.15))}
+.dock-i:active{transform:translateY(-6px) scale(1.1)}
+.dock-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.3);margin-top:2px;transition:all 0.3s}
+.dock-slot{display:flex;flex-direction:column;align-items:center;gap:0}
+.dock-slot:hover .dock-dot{background:rgba(255,255,255,0.7)}
+.dock-sep{width:1px;height:36px;background:rgba(255,255,255,0.07);border-radius:1px;flex-shrink:0;align-self:center}
+
+/* ====== PAGE DOTS ====== */
+.dots{display:flex;justify-content:center;gap:6px;padding:8px 0 2px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.18);transition:all 0.3s}
+.dot.on{width:20px;border-radius:3px;background:rgba(255,255,255,0.55)}
+
+/* ====== RESPONSIVE ====== */
+@media(max-width:480px){
+  .clock-h{font-size:4rem;letter-spacing:4px}
+  :root{--icon-size:56px;--icon-r:14px}
+  .dock-i{width:44px;height:44px;border-radius:12px}
+  .dock-bar{padding:8px 14px;gap:10px;border-radius:22px}
+  .widget{min-width:100px;padding:10px 12px}
+  .w-val{font-size:1.05rem}
+  .grid{padding:0}
+}
+
+/* ====== ANIMATIONS ====== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.app{animation:fadeIn 0.45s ease-out backwards}
+.app:nth-child(1){animation-delay:0.04s}.app:nth-child(2){animation-delay:0.08s}
+.app:nth-child(3){animation-delay:0.12s}.app:nth-child(4){animation-delay:0.16s}
+.app:nth-child(5){animation-delay:0.20s}.app:nth-child(6){animation-delay:0.24s}
+.app:nth-child(7){animation-delay:0.28s}.app:nth-child(8){animation-delay:0.32s}
+.widget{animation:slideUp 0.5s ease-out backwards}
+.widget:nth-child(1){animation-delay:0.1s}.widget:nth-child(2){animation-delay:0.16s}
+.widget:nth-child(3){animation-delay:0.22s}.widget:nth-child(4){animation-delay:0.28s}
+.dock-bar{animation:slideUp 0.6s ease-out 0.4s backwards}
+.island{animation:fadeIn 0.5s ease-out 0.1s backwards}
+.clock{animation:fadeIn 0.6s ease-out 0.15s backwards}
+
+/* ====== TOOLTIP ====== */
+[data-t]:hover::after{content:attr(data-t);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:rgba(10,10,30,0.92);backdrop-filter:blur(12px);color:var(--text);font-size:0.62rem;font-weight:500;padding:7px 14px;border-radius:10px;white-space:nowrap;pointer-events:none;border:1px solid var(--glass-border2);z-index:20;animation:fadeIn 0.2s ease-out;letter-spacing:0.5px}
+
+/* ====== CONTEXT RING (animated border) ====== */
+.ring{position:absolute;inset:-2px;border-radius:calc(var(--icon-r) + 2px);opacity:0;transition:opacity 0.3s;pointer-events:none;background:conic-gradient(from var(--angle,0deg),var(--cyan),var(--purple),var(--pink),var(--cyan));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px))}
+.app:hover .ring{opacity:0.7}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes ringRotate{to{--angle:360deg}}
+.ring{animation:ringRotate 3s linear infinite}
+</style>
+</head>
+<body>
+
+<!-- WALLPAPER -->
+<div class="wall">
+  <div class="wall-mesh"></div>
+  <div class="wall-grid"></div>
+  <div class="aurora aurora-1"></div>
+  <div class="aurora aurora-2"></div>
+  <div class="stars" id="stars"></div>
+</div>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- SCREEN -->
+<div class="screen" id="screen">
+
+  <!-- DYNAMIC ISLAND -->
+  <div class="island" id="island">
+    <div class="island-dot"></div>
+    <span class="island-text">GNSIS</span>
+    <div class="island-sep"></div>
+    <span class="island-time" id="islandTime">--:--</span>
+  </div>
+
+  <!-- CLOCK -->
+  <div class="clock">
+    <div class="clock-h" id="clock">--:--</div>
+    <div class="clock-d" id="date">---</div>
+  </div>
+
+  <!-- KPI WIDGETS -->
+  <div class="widget-strip">
+    <div class="widget" data-accent="cyan">
+      <div class="w-val">$1.02M</div>
+      <div class="w-label">Pipeline</div>
+      <div class="w-trend w-up">+12.4%</div>
+    </div>
+    <div class="widget">
+      <div class="w-val">24</div>
+      <div class="w-label">Leads</div>
+      <div class="w-trend w-up">+5 hoy</div>
+    </div>
+    <div class="widget" data-accent="pink">
+      <div class="w-val">$408K</div>
+      <div class="w-label">Facturado</div>
+      <div class="w-trend w-up">+8.2%</div>
+    </div>
+    <div class="widget">
+      <div class="w-val">7</div>
+      <div class="w-label">Proyectos</div>
+      <div class="w-trend w-down">2 urgentes</div>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE -->
+  <div class="scroll" id="scroll">
+
+    <!-- SEARCH -->
+    <div class="search" onclick="window.open('https://gnsis-global.monday.com','_blank')">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span>Buscar en GNSIS...</span>
+    </div>
+
+    <!-- PAGE DOTS -->
+    <div class="dots">
+      <div class="dot on"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- ═══ CRM & VENTAS ═══ -->
+    <div class="sec">CRM & Ventas</div>
+    <div class="grid">
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402048552" target="_blank" data-t="24 leads activos" style="--glow:rgba(255,107,53,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/leads.png" class="icon" alt="Leads">
+          <div class="badge">5</div>
+        </div>
+        <div class="label">Leads</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402048570" target="_blank" data-t="$1.02M en pipeline" style="--glow:rgba(0,200,83,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/pipeline.png" class="icon" alt="Pipeline">
+          <div class="badge badge-live">3</div>
+        </div>
+        <div class="label">Pipeline</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402044896" target="_blank" data-t="Hub de clientes" style="--glow:rgba(233,30,99,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/clientes.png" class="icon" alt="Clientes">
+        </div>
+        <div class="label">Clientes</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402048596" target="_blank" data-t="3 contratos vigentes" style="--glow:rgba(124,77,255,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/contratos.png" class="icon" alt="Contratos">
+          <div class="badge" style="background:var(--orange)">1</div>
+        </div>
+        <div class="label">Contratos</div>
+      </a>
+    </div>
+
+    <!-- ═══ OPERACIONES ═══ -->
+    <div class="sec">Operaciones</div>
+    <div class="grid">
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402048620" target="_blank" data-t="$408K facturado" style="--glow:rgba(255,179,0,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/facturas.png" class="icon" alt="Facturas">
+          <div class="badge badge-new">2</div>
+        </div>
+        <div class="label">Facturas</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402048640" target="_blank" data-t="7 proyectos activos" style="--glow:rgba(0,145,234,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/proyectos.png" class="icon" alt="Proyectos">
+        </div>
+        <div class="label">Proyectos</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402044895" target="_blank" data-t="Ingresos y gastos" style="--glow:rgba(0,230,118,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/finanzas.png" class="icon" alt="Finanzas">
+        </div>
+        <div class="label">Finanzas</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402048620" target="_blank" data-t="Reportes y KPIs" style="--glow:rgba(255,109,0,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/analytics.png" class="icon" alt="Analytics">
+        </div>
+        <div class="label">Reportes</div>
+      </a>
+    </div>
+
+    <!-- ═══ INTELIGENCIA ═══ -->
+    <div class="sec">Inteligencia</div>
+    <div class="grid">
+      <a class="app" href="https://gnsis-global.monday.com/dashboards/35889075" target="_blank" data-t="Dashboard 12 widgets" style="--glow:rgba(0,184,212,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/command-center.png" class="icon" alt="CMD">
+          <div class="badge badge-new">!</div>
+        </div>
+        <div class="label">Command</div>
+      </a>
+      <a class="app" href="http://localhost:3100" target="_blank" data-t="Scoring, 360, Predictor" style="--glow:rgba(170,0,255,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/ai-center.png" class="icon" alt="AI">
+          <div class="badge badge-ai">AI</div>
+        </div>
+        <div class="label">AI Center</div>
+      </a>
+      <a class="app" href="http://localhost/cerebro" target="_blank" data-t="CRM completo v4.2" style="--glow:rgba(0,188,212,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/cerebro.png" class="icon" alt="Cerebro">
+        </div>
+        <div class="label">Cerebro</div>
+      </a>
+      <a class="app" href="https://gnsis-global.monday.com/boards/18402049341" target="_blank" data-t="Gobernanza Enterprise" style="--glow:rgba(84,110,122,0.25)">
+        <div class="icon-wrap">
+          <div class="ring"></div>
+          <img src="icons/admin.png" class="icon" alt="Admin">
+        </div>
+        <div class="label">Admin</div>
+      </a>
+    </div>
+
+    <!-- BRANDING FOOTER -->
+    <div style="text-align:center;padding:24px 0 12px;font-size:0.52rem;color:var(--text3);letter-spacing:3px;text-transform:uppercase">
+      GNSIS Global &middot; Plataforma CRM/ERP &middot; 2026
+    </div>
+
+  </div><!-- /scroll -->
+
+  <!-- DOCK -->
+  <div class="dock">
+    <div class="dock-bar" id="dock">
+      <div class="dock-slot">
+        <a href="https://gnsis-global.monday.com/dashboards/35889075" target="_blank">
+          <img src="icons/command-center.png" class="dock-i" alt="CMD" style="--glow:rgba(0,184,212,0.3)">
+        </a>
+        <div class="dock-dot"></div>
+      </div>
+      <div class="dock-slot">
+        <a href="https://gnsis-global.monday.com/boards/18402048570" target="_blank">
+          <img src="icons/pipeline.png" class="dock-i" alt="Pipeline" style="--glow:rgba(0,200,83,0.3)">
+        </a>
+        <div class="dock-dot"></div>
+      </div>
+      <div class="dock-sep"></div>
+      <div class="dock-slot">
+        <a href="https://gnsis-global.monday.com/boards/18402048552" target="_blank">
+          <img src="icons/leads.png" class="dock-i" alt="Leads" style="--glow:rgba(255,107,53,0.3)">
+        </a>
+      </div>
+      <div class="dock-slot">
+        <a href="http://localhost:3100" target="_blank">
+          <img src="icons/ai-center.png" class="dock-i" alt="AI" style="--glow:rgba(170,0,255,0.3)">
+        </a>
+        <div class="dock-dot"></div>
+      </div>
+      <div class="dock-sep"></div>
+      <div class="dock-slot">
+        <a href="http://localhost/cerebro" target="_blank">
+          <img src="icons/cerebro.png" class="dock-i" alt="Cerebro" style="--glow:rgba(0,188,212,0.3)">
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /screen -->
+
+<script>
+// ════════ RELOJ ════════
+function tick(){
+  const n=new Date();
+  const h=String(n.getHours()).padStart(2,'0');
+  const m=String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent=h+':'+m;
+  document.getElementById('islandTime').textContent=h+':'+m;
+  const dias=['Domingo','Lunes','Martes','Mi\u00e9rcoles','Jueves','Viernes','S\u00e1bado'];
+  const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('date').textContent=dias[n.getDay()]+', '+n.getDate()+' de '+meses[n.getMonth()];
+}
+tick();setInterval(tick,5000);
+
+// ════════ STARS ════════
+const starContainer=document.getElementById('stars');
+for(let i=0;i<50;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const size=Math.random()*2+0.5;
+  s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${Math.random()*3+2}s`;
+  starContainer.appendChild(s);
+}
+
+// ════════ PARTICLES ════════
+const pc=document.getElementById('particles');
+function spawnP(){
+  const p=document.createElement('div');
+  p.className='p';
+  const sz=Math.random()*2.5+0.8;
+  const x=Math.random()*100;
+  const dur=Math.random()*18+12;
+  const cs=['rgba(0,229,255,0.5)','rgba(124,77,255,0.4)','rgba(224,64,251,0.35)','rgba(0,230,118,0.4)'];
+  p.style.cssText=`width:${sz}px;height:${sz}px;left:${x}%;background:${cs[Math.floor(Math.random()*4)]};animation-duration:${dur}s;animation-delay:${Math.random()*4}s;box-shadow:0 0 ${sz*4}px currentColor`;
+  pc.appendChild(p);
+  setTimeout(()=>p.remove(),(dur+5)*1000);
+}
+for(let i=0;i<12;i++) spawnP();
+setInterval(spawnP,2500);
+
+// ════════ 3D PARALLAX TILT ════════
+const screen=document.getElementById('screen');
+let tiltX=0,tiltY=0,targetX=0,targetY=0;
+document.addEventListener('mousemove',e=>{
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  targetX=(e.clientY-cy)/cy*3; // max 3deg
+  targetY=(e.clientX-cx)/cx*-3;
+});
+function animateTilt(){
+  tiltX+=(targetX-tiltX)*0.08;
+  tiltY+=(targetY-tiltY)*0.08;
+  screen.style.transform=`rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+  requestAnimationFrame(animateTilt);
+}
+animateTilt();
+
+// ════════ DOCK MAGNIFICATION (macOS-style) ════════
+const dock=document.getElementById('dock');
+const dockItems=dock.querySelectorAll('.dock-i');
+dock.addEventListener('mousemove',e=>{
+  const dockRect=dock.getBoundingClientRect();
+  dockItems.forEach(item=>{
+    const itemRect=item.getBoundingClientRect();
+    const itemCenterX=itemRect.left+itemRect.width/2;
+    const dist=Math.abs(e.clientX-itemCenterX);
+    const maxDist=150;
+    if(dist<maxDist){
+      const scale=1+0.35*(1-dist/maxDist);
+      const lift=-14*(1-dist/maxDist);
+      item.style.transform=`translateY(${lift}px) scale(${scale})`;
+    }else{
+      item.style.transform='';
+    }
+  });
+});
+dock.addEventListener('mouseleave',()=>{
+  dockItems.forEach(i=>i.style.transform='');
+});
+
+// ════════ HAPTIC ════════
+document.querySelectorAll('.app,.dock-i').forEach(el=>{
+  el.addEventListener('click',()=>{if(navigator.vibrate)navigator.vibrate(10)});
+});
+
+// ════════ LONG PRESS WIGGLE (iOS) ════════
+let lpt;
+document.querySelectorAll('.app').forEach(el=>{
+  el.addEventListener('pointerdown',()=>{
+    lpt=setTimeout(()=>{
+      document.querySelectorAll('.app').forEach(a=>a.style.animation='wiggle 0.25s ease-in-out infinite alternate');
+    },700);
+  });
+  el.addEventListener('pointerup',()=>clearTimeout(lpt));
+  el.addEventListener('pointerleave',()=>clearTimeout(lpt));
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.app'))
+    document.querySelectorAll('.app').forEach(a=>a.style.animation='');
+});
+const ws=document.createElement('style');
+ws.textContent='@keyframes wiggle{0%{transform:rotate(-1.8deg) scale(0.97)}100%{transform:rotate(1.8deg) scale(0.97)}}';
+document.head.appendChild(ws);
+
+// ════════ DYNAMIC ISLAND EXPAND ════════
+const island=document.getElementById('island');
+let islandExpanded=false;
+island.addEventListener('click',()=>{
+  if(!islandExpanded){
+    island.style.cssText='padding:12px 28px;gap:14px;min-width:280px;border-radius:28px';
+    island.innerHTML=`
+      <div class="island-dot"></div>
+      <span class="island-text">Sistema Activo</span>
+      <div class="island-sep"></div>
+      <span class="island-time" id="islandTime2">...</span>
+      <div class="island-sep"></div>
+      <span class="island-text" style="color:var(--green)">12 Apps</span>
+    `;
+    const n=new Date();
+    document.getElementById('islandTime2').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+    islandExpanded=true;
+    setTimeout(()=>{
+      island.style.cssText='';
+      island.innerHTML=`
+        <div class="island-dot"></div>
+        <span class="island-text">GNSIS</span>
+        <div class="island-sep"></div>
+        <span class="island-time" id="islandTime">--:--</span>
+      `;
+      tick();
+      islandExpanded=false;
+    },3000);
+  }
+});
+
+// ════════ SCROLL FADE ════════
+const scrollEl=document.getElementById('scroll');
+scrollEl.addEventListener('scroll',()=>{
+  const clockEl=document.querySelector('.clock');
+  const s=Math.min(scrollEl.scrollTop/120,1);
+  clockEl.style.opacity=1-s*0.7;
+  clockEl.style.transform=`scale(${1-s*0.15})`;
+});
+</script>
+</body>
+</html>
